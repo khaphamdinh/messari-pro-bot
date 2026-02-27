@@ -1,0 +1,32 @@
+{
+    "name": "messari-bot",
+    "version": "1.0.0",
+    "description": "Telegram bot for Messari AI x402 payment endpoint",
+    "main": "index.js",
+    "scripts": {
+        "dev": "ts-node-dev --respawn --transpile-only src/bot.ts",
+        "build": "tsc",
+        "start": "node dist/bot.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@types/node-fetch": "^2.6.13",
+        "@x402/evm": "^2.3.0",
+        "@x402/fetch": "^2.3.0",
+        "dotenv": "^16.4.5",
+        "grammy": "^1.30.0",
+        "i": "^0.3.7",
+        "node-fetch": "^3.3.2",
+        "npm": "^11.10.1",
+        "viem": "^2.21.0"
+    },
+    "devDependencies": {
+        "@types/node": "^22.5.0",
+        "ts-node": "^10.9.2",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.5.4"
+    }
+}
