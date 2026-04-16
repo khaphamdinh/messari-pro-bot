@@ -1,4 +1,4 @@
-require('dotenv').config();
+import 'dotenv/config';
 
 const requiredEnvVars = ['TELEGRAM_BOT_TOKEN', 'WALLET_PRIVATE_KEY'];
 

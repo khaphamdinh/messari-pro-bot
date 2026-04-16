@@ -1,4 +1,5 @@
 import { Bot } from 'grammy';
+import 'dotenv/config';
 import { config } from './config';
 import { setDailyLimit } from './core/budgetTracker';
 
@@ -17,6 +18,22 @@ import { handleFreestyle } from './commands/freestyle';
 
 const bot = new Bot(config.TELEGRAM_BOT_TOKEN);
 setDailyLimit(config.DAILY_BUDGET_LIMIT);
+
+// Fix #1: Security Access Control Guard
+const ALLOWED_IDS = (process.env.ALLOWED_USER_IDS || '')
+  .split(',')
+  .map(id => Number(id.trim()))
+  .filter(Boolean);
+
+bot.use(async (ctx, next) => {
+  const userId = ctx.from?.id;
+  // If list is empty, everyone is allowed. If not empty, strict check.
+  if (ALLOWED_IDS.length > 0 && (!userId || !ALLOWED_IDS.includes(userId))) {
+    console.warn(`Unauthorized access attempt from ID: ${userId}`);
+    return; // Silently ignore to keep the bot's existence stealthy
+  }
+  return next();
+});
 
 bot.api.setMyCommands([
   { command: 'start', description: '🚀 Onboarding' },
