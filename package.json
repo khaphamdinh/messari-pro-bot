@@ -1,9 +1,10 @@
 {
-    "name": "messari-bot",
-    "version": "1.0.0",
-    "description": "Telegram bot for Messari AI x402 payment endpoint",
+    "name": "messari-pro-bot",
+    "version": "2.0.0",
+    "description": "Multi-endpoint Telegram research terminal powered by Messari + x402 payments",
     "main": "index.js",
     "scripts": {
+        "predev": "test -f src/prompts.ts || cp src/prompts.example.ts src/prompts.ts",
         "dev": "ts-node-dev --respawn --transpile-only src/bot.ts",
         "build": "tsc",
         "start": "node dist/bot.js",
@@ -13,14 +14,10 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@types/node-fetch": "^2.6.13",
         "@x402/evm": "^2.3.0",
         "@x402/fetch": "^2.3.0",
         "dotenv": "^16.4.5",
         "grammy": "^1.30.0",
-        "i": "^0.3.7",
-        "node-fetch": "^3.3.2",
-        "npm": "^11.10.1",
         "viem": "^2.21.0"
     },
     "devDependencies": {

@@ -2,7 +2,12 @@ node_modules/
 dist/
 .env
 *.log
-test-morning.*
-test-api.*
 *.md
 !README.md
+!src/samples/README.md
+
+# Secret Intellectual Property
+src/prompts.ts
+src/samples/*.pdf
+src/samples/*.md
+src/samples/venv/

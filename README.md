@@ -1,94 +1,70 @@
-# 🤖 Messari Pro AI Bot
+# 🤖 Crypto Intelligence Bot v1.1
 
-An intelligent Bot powered by **Messari API** and **x402 Protocol (Base Network)**. This bot integrates real-time crypto intelligence with an autonomous payment processing layer. 
+A professional-grade AI research agent powered by the **Messari Engine** and **x402 (Base Network)**. This agent synthesizes real-time on-chain data, curated news, and institutional-grade metrics into structured research reports.
 
-Designed for Crypto Degens, Analysts, & Builders who need a curated newsroom and deep-research capabilities delivered straight to their Telegram accounts.
+> **Thesis**: The next million users in crypto will be AI Agents. This bot is a live implementation of agentic commerce using on-chain payment rails.
 
-## 📖 Table of Contents
-- [✨ Features](#-features)
-- [🏗️ Architecture Stack](#️-architecture-stack)
-- [🚀 Quick Setup & Installation](#-quick-setup--installation)
-- [🛠️ Customization (Build Your Own AI Newsroom)](#️-customization-build-your-own-ai-newsroom)
-- [⚠️ Security Warning](#️-security-warning)
+## 🚀 Key Features
 
-## ✨ Features
+### 📄 Specialized Research Reports (`/report`)
+Generate expert-level analysis using a **Modular Prompt Engine**. This feature supports:
+- **Template-driven Analysis**: Pre-built logic for Due Diligence, Bull/Bear cases, Comparison showdowns, and Risk assessments.
 
-- **🌅 The Daily Alpha Brief (`/morning`)**: Have a coffee and get your daily alpha every day with Messari Pro AI Bot. It acts as your Editor-in-Chief by scraping the top 10-15 critical, market-moving events from the past 24 hours. The bot dedupes them and provides 2-3 sentence thesis summaries alongside verified source links.
+### 🔬 Composite Deep Research (`/deepreport`)
+A high-leverage data synthesis engine for heavy-duty research (~$1.00 cost) with data aggregation: Simultaneously fetches `asset-details` (Market Cap, Supply), `roi` (Performance history), and `news-feed` (Curated news snippets/Why does this matter?).
 
-- **📄 Deep Research Reports (`/report`)**: Build your own analytical reports on any token or narrative. Includes prompt templates for Due Diligence, Comparison showdowns, Bull/Bear cases, and Regulatory risk. You can seamlessly add more templates in `src/prompts.ts`.
+### 💰 Autonomous x402 Payments
+- **Agentic Wallet**: The bot operates its own burner wallet on the **Base Mainnet**.
+- **Pay-per-Query**: Pays between $0.25 (AI chat) and $1.00 (Deep Data) in USDC per request. No monthly subscriptions or shared API keys required.
 
-- **💬 Freestyle Copilot**: Just type any query in standard chat mode. The bot will use Messari's AI to deliver deep analytical rigor, bypassing standard summary constraints.
+## 🛠️ Quick Start (Works out of the box)
 
-- **💰 Autonomous Onchain Payments (`/balance`)**: Built on the **x402 EVM Standard**. The bot automatically pays $0.25 in USDC via the **Base Mainnet** for each AI request. No Messari account needed, no subscription API keys required. Just fund the bot's wallet! Only 25 cents, pay as you go!
+If you just want the bot to run immediately with standard AI intelligence:
 
-## 🏗️ Architecture Stack
-
-- **Framework**: `grammY` (Telegram Bot API)
-- **Language**: TypeScript (Node.js 20)
-- **Payment Layer**: `@x402/fetch` and `viem` (Base Mainnet)
-- **Data Source**: Messari AI v2 endpoint (https://docs.messari.io/api-reference/x402-payments)
-
----
-
-## 🚀 Quick Setup & Installation
-
-### 1. Prerequisites
-- **Node.js**: v20 or higher.
-- **Telegram Bot Token**: Get one from [@BotFather](https://t.me/BotFather).
-- **Burner Wallet**: A dedicated EVM private key funded with **USDC** and **ETH (Gas)** on the **Base Mainnet**. _(Never use your personal main wallet!)_
-
-### 2. Installation
-Clone the repository and install dependencies:
 ```bash
+# 1. Clone and Install
 git clone https://github.com/khaphamdinh/messari-pro-bot.git
 cd messari-pro-bot
 npm install
-```
 
-### 3. Environment Variables
-Copy the template and fill in your credentials:
-```bash
-cp .env.example .env
-```
-Ensure your `.env` contains:
-```env
-TELEGRAM_BOT_TOKEN="your_telegram_bot_token"
-WALLET_PRIVATE_KEY="0x_your_burner_wallet_private_key"
-```
+# 2. Configure Credentials (.env)
+cp .env.example .env 
+# ⚠️ CRITICAL: Fill in TELEGRAM_BOT_TOKEN and WALLET_PRIVATE_KEY. Use a NEW wallet only. Never expose your primary keys.
 
-### 4. Run the Bot
-Start the bot in development mode with **Hot Reload** enabled:
-```bash
+# 3. Launch
 npm run dev
 ```
-For production deployment using PM2 (background process manager):
-```bash
-npm install -g pm2
-npm run build
-pm2 start "npm start" --name "messari-pro-bot"
-```
 
 ---
 
-## 🛠️ Customization (Build Your Own AI Newsroom)
+## 🧠 Pro Customization (Master Analyst Mode)
 
-The true power of this bot lies in its heavily engineered **System Prompts**. 
+To unlock the full potential of the bot and mimic elite research firms, you need to customize its brain.
 
-I have added some example prompts to get you started, but you can completely alter the bot's tone, focus, and analytical depth.
+### 1. Refine the Brain (`src/prompts.ts`)
+The "Intelligence" of the bot is stored in `src/prompts.ts`. 
+- Open this file.
+- Edit the `REPORT_TEMPLATES` object to change how the bot thinks, its tone, and analytical depth.
 
-1. Open the file `src/prompts.ts`.
-2. In this file, you will find the `REPORT_TEMPLATES` object. Want your `/morning` summary to speak like a decentralized finance degen? Or maybe you want a new `/chart` research template?
-3. Customize the prompts to your liking.
+### 2. Activate Style Cloning (`src/samples/`)
+The bot can "clone" the writing style of any high-end report you give it.
+- **Step A:** Find a high-quality PDF report (e.g., from Messari or your own analytical writings).
+- **Step B:** Convert that PDF to a `.md` (Markdown) file.
+- **Step C:** Save it in the `src/samples/` directory with a filename matching your command (e.g., `diligence.md`, `compare.md`).
+- **Result:** The bot will automatically detect it and "inject" that specific markdown into its AI context to clone the exact formatting, vocabulary, and structure!
 
-**Pro Tip:** Keep your prompts strictly structured to ensure the AI parses Messari data accurately. The AI relies entirely on the quality of the prompt you feed into `src/prompts.ts`!
+## 🔌 Commands
+
+- `/morning` - Daily curated alpha brief.
+- `/report <type> <topic>` - Specialized reports (`diligence`, `compare`, `bullbear`, `narrative`, `risk`).
+- `/deepreport <asset>` - Composite data synthesis (~$1.00 cost).
+- `/balance` - Check your x402 burner wallet balance on Base.
+
+## 🏗️ Tech Stack
+
+- **Payment Layer**: x402 Protocol (USDC on Base Mainnet).
+- **Core Engine**: TypeScript, Node.js, grammY.
+- **Data Source**: Messari AI v2 API.
 
 ---
-
-## ⚠️ Security Warning
-
-- **DO NOT** commit your `.env` file to GitHub. The `.gitignore` is set up to protect it, but always double-check before pushing.
-- **DO NOT** fund the bot's wallet with large amounts of capital. Treat it like a prepaid metro card.
-- Open-sourcing tools with private keys is inherently risky if best practices are ignored. You bear full responsibility for your wallet's security.
-
----
-*Built with ❤️ for the Crypto x AI Ecosystem.*
+*Built for the Agentic Economy. Handle with care.*
