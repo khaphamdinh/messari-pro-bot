@@ -25,12 +25,15 @@ const ALLOWED_IDS = (process.env.ALLOWED_USER_IDS || '')
   .map(id => Number(id.trim()))
   .filter(Boolean);
 
+if (ALLOWED_IDS.length === 0) {
+  console.warn('⚠️  ALLOWED_USER_IDS not set — bot is open to ALL Telegram users. Set this in .env to restrict access.');
+}
+
 bot.use(async (ctx, next) => {
   const userId = ctx.from?.id;
-  // If list is empty, everyone is allowed. If not empty, strict check.
   if (ALLOWED_IDS.length > 0 && (!userId || !ALLOWED_IDS.includes(userId))) {
     console.warn(`Unauthorized access attempt from ID: ${userId}`);
-    return; // Silently ignore to keep the bot's existence stealthy
+    return;
   }
   return next();
 });
