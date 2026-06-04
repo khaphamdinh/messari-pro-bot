@@ -1,8 +1,8 @@
 import { Context } from 'grammy';
-import { getAssetDetails, getAssetROI, getNewsFeed } from '../providers/messariData';
-import { askMessariAI } from '../providers/messariAI';
-import { canAfford } from '../core/budgetTracker';
-import { sendChunkedResponse } from '../format';
+import { getAssetDetails, getAssetROI, getNewsFeed } from '../../providers/messariData';
+import { askMessariAI } from '../../providers/messariAI';
+import { canAfford } from '../../core/budgetTracker';
+import { sendChunkedResponse } from '../../format';
 
 export async function handleDeepReport(ctx: Context) {
   const match = ctx.message?.text?.match(/^\/deepreport\s+(.+)/i);
@@ -92,7 +92,7 @@ DEPTH CONSTRAINT: You MUST write an exceptionally long and exhaustive analysis (
   return context;
 }
 
-import { getBudgetState } from '../core/budgetTracker';
+import { getBudgetState } from '../../core/budgetTracker';
 
 // Re-exported the function signature to include the original news object
 function formatDeepReport(text: string, newsData: any, totalCost: number): string {

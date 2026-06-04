@@ -4,7 +4,7 @@ import { paymentMiddleware, setSettlementOverrides, x402ResourceServer } from '@
 import { UptoEvmScheme } from '@x402/evm/upto/server';
 import { HTTPFacilitatorClient } from '@x402/core/server';
 import { createFacilitatorConfig } from '@coinbase/x402';
-import { cacheGet, cacheSet, TTL, hourBucket } from './cache';
+import { cacheGet, cacheSet, TTL, hourBucket } from '../cache';
 import { getMorningBrief } from './messari';
 import { runResearch, VALID_TYPES } from './services/research';
 

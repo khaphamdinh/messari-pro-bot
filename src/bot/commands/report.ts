@@ -1,6 +1,6 @@
 import { Context } from 'grammy';
-import { runResearch } from '../services/research';
-import { formatResponse, sendChunkedResponse } from '../format';
+import { runResearch } from '../../api/services/research';
+import { formatResponse, sendChunkedResponse } from '../../format';
 
 export async function handleReport(ctx: Context) {
   const match = ctx.message?.text?.match(/^\/report\s+(\w+)\s+(.*)/i);

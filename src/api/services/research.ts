@@ -1,5 +1,5 @@
-import { askMessariAI } from '../providers/messariAI';
-import { getPromptTemplate } from '../prompts';
+import { askMessariAI } from '../../providers/messariAI';
+import { getPromptTemplate } from '../../prompts';
 
 export const VALID_TYPES = ['diligence', 'compare', 'bullbear', 'narrative', 'risk', 'tweet'] as const;
 export type ResearchType = typeof VALID_TYPES[number];

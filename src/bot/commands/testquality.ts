@@ -1,5 +1,5 @@
 import { Context } from 'grammy';
-import { fetchWithPayment } from '../core/x402Client';
+import { fetchWithPayment } from '../../core/x402Client';
 
 export async function handleTestQuality(ctx: Context) {
   await ctx.reply("🔄 Đang fetch CoinGecko + test synthesis... ~30s");

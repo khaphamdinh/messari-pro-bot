@@ -1,7 +1,7 @@
 import { Context } from 'grammy';
 import { createPublicClient, http, formatEther, formatUnits, parseAbi } from 'viem';
 import { base } from 'viem/chains';
-import { walletAddress } from '../core/x402Client';
+import { walletAddress } from '../../core/x402Client';
 
 const publicClient = createPublicClient({
   chain: base,

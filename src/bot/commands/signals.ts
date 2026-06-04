@@ -1,18 +1,12 @@
 import { Context } from 'grammy';
-import { getTokenUnlockEvents } from '../providers/messariData';
-import { formatDataResponse } from '../format';
+import { getSignalsMindshareGainers24h } from '../../providers/messariData';
+import { formatDataResponse } from '../../format';
 
-export async function handleUnlocks(ctx: Context) {
-  const match = ctx.message?.text?.match(/^\/unlocks\s+(.+)/i);
-  if (!match) {
-    return ctx.reply('Usage: `/unlocks <asset>` (e.g., `/unlocks solana`)', { parse_mode: 'Markdown' });
-  }
-
-  const assetId = match[1].trim().toLowerCase();
-  const pending = await ctx.reply('⏳ Fetching token unlock schedule...');
+export async function handleSignals(ctx: Context) {
+  const pending = await ctx.reply('⏳ Fetching mindshare signals...');
 
   try {
-    const result = await getTokenUnlockEvents(assetId);
+    const result = await getSignalsMindshareGainers24h();
 
     if (!result.success) {
       await ctx.api.editMessageText(ctx.chat!.id, pending.message_id, `❌ ${result.error}`);

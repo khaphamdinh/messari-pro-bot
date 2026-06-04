@@ -1,7 +1,7 @@
 import { Context } from 'grammy';
-import { askMessariAI } from '../providers/messariAI';
-import { getPromptTemplate } from '../prompts';
-import { formatResponse, sendChunkedResponse } from '../format';
+import { askMessariAI } from '../../providers/messariAI';
+import { getPromptTemplate } from '../../prompts';
+import { formatResponse, sendChunkedResponse } from '../../format';
 
 export async function handleFreestyle(ctx: Context) {
   const query = ctx.message?.text;

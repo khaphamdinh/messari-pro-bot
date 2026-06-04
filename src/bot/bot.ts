@@ -1,7 +1,7 @@
 import { Bot } from 'grammy';
 import 'dotenv/config';
-import { config } from './config';
-import { setDailyLimit } from './core/budgetTracker';
+import { config } from '../config';
+import { setDailyLimit } from '../core/budgetTracker';
 
 import { handleStart, handleHelp, handleStatus } from './commands/general';
 import { handleBalance } from './commands/balance';

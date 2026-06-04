@@ -1,18 +1,18 @@
 import { Context } from 'grammy';
-import { getNewsFeed } from '../providers/messariData';
-import { formatDataResponse } from '../format';
+import { getAssetDetails } from '../../providers/messariData';
+import { formatDataResponse } from '../../format';
 
-export async function handleNews(ctx: Context) {
-  const match = ctx.message?.text?.match(/^\/news(?:\s+(.+))?/i);
-  const assetSlug = match?.[1]?.trim().toLowerCase();
+export async function handleData(ctx: Context) {
+  const match = ctx.message?.text?.match(/^\/data\s+(.+)/i);
+  if (!match) {
+    return ctx.reply('Usage: `/data <asset>` (e.g., `/data solana`)', { parse_mode: 'Markdown' });
+  }
 
-  const pending = await ctx.reply('⏳ Fetching curated news feed...');
+  const assetSlug = match[1].trim().toLowerCase();
+  const pending = await ctx.reply('⏳ Fetching asset data...');
 
   try {
-    const params: { limit: string; assetSlugs?: string } = { limit: '10' };
-    if (assetSlug) params.assetSlugs = assetSlug;
-
-    const result = await getNewsFeed(params);
+    const result = await getAssetDetails({ assetSlugs: assetSlug });
 
     if (!result.success) {
       await ctx.api.editMessageText(ctx.chat!.id, pending.message_id, `❌ ${result.error}`);

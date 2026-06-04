@@ -5,12 +5,12 @@
     "main": "index.js",
     "scripts": {
         "predev": "test -f src/prompts.ts || cp src/prompts.example.ts src/prompts.ts",
-        "dev": "ts-node-dev --respawn --transpile-only src/bot.ts",
+        "dev": "ts-node-dev --respawn --transpile-only src/bot/bot.ts",
         "build": "tsc",
-        "start": "node dist/bot.js",
+        "start": "node dist/bot/bot.js",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start:server": "node dist/server.js",
-        "start:all": "concurrently \"node dist/bot.js\" \"node dist/server.js\""
+        "start:server": "node dist/api/server.js",
+        "start:all": "concurrently \"node dist/bot/bot.js\" \"node dist/api/server.js\""
     },
     "keywords": [],
     "author": "",
