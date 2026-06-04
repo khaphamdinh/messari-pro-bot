@@ -1,6 +1,5 @@
 import { Context } from 'grammy';
-import { askMessariAI } from '../providers/messariAI';
-import { getPromptTemplate } from '../prompts';
+import { runResearch } from '../services/research';
 import { formatResponse, sendChunkedResponse } from '../format';
 
 export async function handleReport(ctx: Context) {
@@ -17,10 +16,8 @@ export async function handleReport(ctx: Context) {
   const pending = await ctx.reply('⏳ Connecting to Messari AI via Base network... (~30–60s)');
 
   try {
-    const prompt = getPromptTemplate(templateType, query);
-    const aiResult = await askMessariAI(prompt);
-    const formatted = formatResponse(aiResult.text, aiResult.sources, aiResult.costUsd);
-
+    const result = await runResearch(query, templateType);
+    const formatted = formatResponse(result.text, result.sources, result.costUsd);
     await sendChunkedResponse(ctx, pending.message_id, formatted);
   } catch (err: any) {
     await ctx.api.editMessageText(ctx.chat!.id, pending.message_id, `❌ ${err.message}`);

@@ -1,9 +1,12 @@
 node_modules/
 dist/
 .env
+.DS_Store
+**/.DS_Store
 *.log
 *.md
 !README.md
+!CLAUDE.md
 !src/samples/README.md
 
 # Secret Intellectual Property

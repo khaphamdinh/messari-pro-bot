@@ -38,7 +38,7 @@ bot.use(async (ctx, next) => {
 bot.api.setMyCommands([
   { command: 'start', description: '🚀 Onboarding' },
   { command: 'help', description: '📖 Usage examples' },
-  { command: 'morning', description: '🌅 24h market brief ($0.25)' },
+  { command: 'morning', description: '🌅 24h market brief (free)' },
   { command: 'report', description: '📄 Deep report ($0.25)' },
   { command: 'deepreport', description: '🔬 Composite report (~$1.00)' },
   { command: 'data', description: '📊 Asset data ($0.10)' },

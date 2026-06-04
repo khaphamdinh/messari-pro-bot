@@ -13,7 +13,7 @@ export function handleStart(ctx: Context) {
 - ⛽ ETH on Base for gas fees
 
 📡 AVAILABLE COMMANDS:
-- /morning — 24h market brief ($0.25)
+- /morning — 24h market brief (free)
   - /report <type> <topic> — deep reports ($0.25)
   - /deepreport <asset> — composite report (~$1.00)
 - /data <asset> — structured asset data ($0.10)
@@ -36,7 +36,7 @@ export function handleHelp(ctx: Context) {
 1️⃣ **Freestyle Query** (Cost: $0.25):
 Type any crypto question — "Analyze Bitcoin" or "Is ETH a buy now?"
 
-2️⃣ **Morning Brief** (Cost: $0.25):
+2️⃣ **Morning Brief** (free):
 \`/morning\`
 
 3️⃣ **Deep Reports** (Cost: $0.25):
@@ -72,7 +72,7 @@ export function handleStatus(ctx: Context) {
 🟢 **Messari Pro Bot v2 — Active**
 - Network: **Base Mainnet (eip155:8453)**
 - Payment: **USDC via x402 protocol**
-- AI cost: **$0.25/request**
+- AI cost: **$0.25/request** (morning: free)
 - Daily budget: configurable via DAILY_BUDGET_LIMIT env
 `;
   return ctx.reply(msg, { parse_mode: 'Markdown' });
