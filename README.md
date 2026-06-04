@@ -1,70 +1,144 @@
-# 🤖 Crypto Intelligence Bot v1.1
+# Messari Pro Bot — Crypto Intelligence × x402
 
-A professional-grade AI research agent powered by the **Messari Engine** and **x402 (Base Network)**. This agent synthesizes real-time on-chain data, curated news, and institutional-grade metrics into structured research reports.
+A dual-mode crypto intelligence service: a Telegram research bot for personal use and a pay-per-request HTTP API listed on [Agentic.Market](https://agentic.market).
 
-> **Thesis**: The next million users in crypto will be AI Agents. This bot is a live implementation of agentic commerce using on-chain payment rails.
+Payments are handled entirely via the **x402 protocol** (USDC on Base Mainnet) — no API keys, no subscriptions.
 
-## 🚀 Key Features
+---
 
-### 📄 Specialized Research Reports (`/report`)
-Generate expert-level analysis using a **Modular Prompt Engine**. This feature supports:
-- **Template-driven Analysis**: Pre-built logic for Due Diligence, Bull/Bear cases, Comparison showdowns, and Risk assessments.
+## Architecture
 
-### 🔬 Composite Deep Research (`/deepreport`)
-A high-leverage data synthesis engine for heavy-duty research (~$1.00 cost) with data aggregation: Simultaneously fetches `asset-details` (Market Cap, Supply), `roi` (Performance history), and `news-feed` (Curated news snippets/Why does this matter?).
+```
+┌─────────────────────────────────────────┐
+│           services/ layer               │
+│  getMorningBrief()  runResearch()       │
+└────────────┬───────────────┬────────────┘
+             │               │
+     src/bot.ts         src/server.ts
+   (Telegram UI)       (x402 HTTP API)
+```
 
-### 💰 Autonomous x402 Payments
-- **Agentic Wallet**: The bot operates its own burner wallet on the **Base Mainnet**.
-- **Pay-per-Query**: Pays between $0.25 (AI chat) and $1.00 (Deep Data) in USDC per request. No monthly subscriptions or shared API keys required.
+Same business logic, two consumers — Telegram for human use, HTTP for agents.
 
-## 🛠️ Quick Start (Works out of the box)
+---
 
-If you just want the bot to run immediately with standard AI intelligence:
+## HTTP Endpoints (Agentic.Market)
 
+| Endpoint | Price | Description |
+|----------|-------|-------------|
+| `GET /v1/morning` | $0.07 max | Daily crypto alpha brief. CoinGecko data + BlockRun AI synthesis. Cached 90 min — cache hits settle $0. |
+| `GET /v1/research?query=&type=` | $0.35 max | On-demand research powered by Messari AI. Types: `diligence` `bullbear` `compare` `narrative` `risk` `tweet` |
+
+Both endpoints use the **upto scheme** — agents authorize a maximum, server settles actual cost.
+
+**Try it:**
 ```bash
-# 1. Clone and Install
-git clone https://github.com/khaphamdinh/messari-pro-bot.git
-cd messari-pro-bot
-npm install
-
-# 2. Configure Credentials (.env)
-cp .env.example .env 
-# ⚠️ CRITICAL: Fill in TELEGRAM_BOT_TOKEN and WALLET_PRIVATE_KEY. Use a NEW wallet only. Never expose your primary keys.
-
-# 3. Launch
-npm run dev
+curl -s https://your-deployment.up.railway.app/v1/morning
+# → HTTP 402 with PAYMENT-REQUIRED header (x402v2 format)
 ```
 
 ---
 
-## 🧠 Pro Customization (Master Analyst Mode)
+## Telegram Bot Commands
 
-To unlock the full potential of the bot and mimic elite research firms, you need to customize its brain.
-
-### 1. Refine the Brain (`src/prompts.ts`)
-The "Intelligence" of the bot is stored in `src/prompts.ts`. 
-- Open this file.
-- Edit the `REPORT_TEMPLATES` object to change how the bot thinks, its tone, and analytical depth.
-
-### 2. Activate Style Cloning (`src/samples/`)
-The bot can "clone" the writing style of any high-end report you give it.
-- **Step A:** Find a high-quality PDF report (e.g., from Messari or your own analytical writings).
-- **Step B:** Convert that PDF to a `.md` (Markdown) file.
-- **Step C:** Save it in the `src/samples/` directory with a filename matching your command (e.g., `diligence.md`, `compare.md`).
-- **Result:** The bot will automatically detect it and "inject" that specific markdown into its AI context to clone the exact formatting, vocabulary, and structure!
-
-## 🔌 Commands
-
-- `/morning` - Daily curated alpha brief.
-- `/report <type> <topic>` - Specialized reports (`diligence`, `compare`, `bullbear`, `narrative`, `risk`).
-- `/deepreport <asset>` - Composite data synthesis (~$1.00 cost).
-- `/balance` - Check your x402 burner wallet balance on Base.
-
-## 🏗️ Tech Stack
-
-- **Payment Layer**: x402 Protocol (USDC on Base Mainnet).
-- **Core Engine**: TypeScript, Node.js, grammY.
-- **Data Source**: Messari AI v2 API.
+| Command | Data Source | Cost |
+|---------|-------------|------|
+| `/morning` | CoinGecko (free) + BlockRun AI | ~$0.001 |
+| `/report <type> <topic>` | Messari AI | $0.25 |
+| `/deepreport <asset>` | Messari multi-endpoint + AI | ~$1.00 max |
+| `/data <asset>` | Messari metrics | $0.10 |
+| `/signals` | Messari mindshare | $0.35 |
+| `/news [asset]` | Messari news feed | $0.55 |
+| `/unlocks <asset>` | Messari token unlocks | $0.15 |
+| `/funding` | Messari funding rounds | $0.15 |
+| `/balance` | Base blockchain RPC | Free |
+| `/budget` | In-memory tracker | Free |
 
 ---
-*Built for the Agentic Economy. Handle with care.*
+
+## Setup
+
+### Prerequisites
+- Node.js 20+
+- Telegram Bot Token ([@BotFather](https://t.me/BotFather))
+- Burner wallet with USDC + ETH on Base Mainnet
+- (Optional) [Coinbase CDP API key](https://portal.cdp.coinbase.com) for mainnet HTTP server
+
+### Install
+
+```bash
+git clone https://github.com/khaphamdinh/messari-pro-bot.git
+cd messari-pro-bot
+npm install
+cp .env.example .env
+```
+
+Edit `.env`:
+```env
+TELEGRAM_BOT_TOKEN=...
+WALLET_PRIVATE_KEY=...        # pays Messari/BlockRun per call
+PROVIDER_WALLET_ADDRESS=...   # receives USDC from API consumers
+DAILY_BUDGET_LIMIT=5.00
+SERVER_PORT=3000
+
+# Optional — enables Base Mainnet for HTTP server
+CDP_API_KEY_ID=...
+CDP_API_KEY_SECRET=...
+```
+
+### Run
+
+```bash
+# Telegram bot only
+npm run dev
+
+# HTTP server only
+npm run start:server
+
+# Both together (production)
+npm run start:all
+```
+
+### HTTP Server Modes
+
+| Mode | Condition | Network | Facilitator |
+|------|-----------|---------|-------------|
+| Development | No CDP keys | Base Sepolia (testnet) | x402.org (public) |
+| Production | CDP keys set | Base Mainnet | Coinbase CDP |
+
+---
+
+## Deploy (Railway)
+
+```bash
+# railway.toml already configured
+# Set env vars in Railway dashboard, then:
+git push origin main  # auto-deploys
+```
+
+---
+
+## Prompts & Style Cloning
+
+The AI behavior is defined in `src/prompts.ts` (gitignored — create from example):
+
+```bash
+cp src/prompts.example.ts src/prompts.ts
+```
+
+Drop `.md` sample reports into `src/samples/` (e.g. `diligence.md`) — the bot will clone their writing style automatically.
+
+---
+
+## Tech Stack
+
+- **Payment**: x402 protocol, upto + exact schemes, Base Mainnet
+- **Bot**: grammY (Telegram), TypeScript, Node.js 20
+- **HTTP Server**: Express + `@x402/express`
+- **Morning data**: CoinGecko API (free) + BlockRun AI (NVIDIA DeepSeek V3.2)
+- **Research data**: Messari AI v2 (`/ai/v2/chat/completions`)
+- **Deploy**: Railway
+
+---
+
+*Built for the agentic economy — where AI agents pay other AI agents.*
