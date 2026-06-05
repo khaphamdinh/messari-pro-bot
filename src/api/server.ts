@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { paymentMiddleware, setSettlementOverrides, x402ResourceServer } from '@x402/express';
 import { UptoEvmScheme } from '@x402/evm/upto/server';
 import { HTTPFacilitatorClient } from '@x402/core/server';
@@ -7,14 +8,34 @@ import { createFacilitatorConfig } from '@coinbase/x402';
 import { cacheGet, cacheSet, TTL, hourBucket } from '../cache';
 import { getMorningBrief } from './messari';
 import { runResearch, VALID_TYPES } from './services/research';
+import { walletAddress } from '../core/x402Client';
 
 const app = express();
+
+// ── Security checks ────────────────────────────────────────────────────────────
 
 const PROVIDER_WALLET = process.env.PROVIDER_WALLET_ADDRESS;
 if (!PROVIDER_WALLET) throw new Error('PROVIDER_WALLET_ADDRESS not set in .env');
 
-// CDP credentials → Base Mainnet (production)
-// No credentials  → x402.org testnet (local dev / CI)
+if (PROVIDER_WALLET.toLowerCase() === walletAddress.toLowerCase()) {
+  console.warn(
+    '⚠️  SECURITY WARNING: PROVIDER_WALLET_ADDRESS is the same as the spending wallet.\n' +
+    '   Revenue and spending share the same hot wallet — use a separate cold wallet for PROVIDER_WALLET_ADDRESS in production.'
+  );
+}
+
+// ── Rate limiting — before payment middleware ──────────────────────────────────
+
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests from this IP, please try again after 15 minutes.' },
+}));
+
+// ── x402 facilitator setup ─────────────────────────────────────────────────────
+
 const HAS_CDP = !!(process.env.CDP_API_KEY_ID && process.env.CDP_API_KEY_SECRET);
 
 const facilitatorConfig = HAS_CDP
@@ -69,7 +90,6 @@ app.get('/v1/morning', async (req, res) => {
 
     const { text: brief, costUsd } = await getMorningBrief();
 
-    // Settle actual cost: gas ~$0.015 + BlockRun cost (0 or $0.001)
     const settleAtomic = Math.round((costUsd + 0.015) * 1_000_000);
     setSettlementOverrides(res, { amount: String(settleAtomic) });
 
@@ -121,12 +141,69 @@ app.get('/v1/research', async (req, res) => {
   }
 });
 
+// ── GET /openapi.json ──────────────────────────────────────────────────────────
+
+app.get('/openapi.json', (req, res) => {
+  res.json({
+    openapi: '3.0.0',
+    info: {
+      title: 'Messari Pro x402 API',
+      version: '2.0.0',
+      description: 'Crypto intelligence API paid via x402 protocol (USDC on Base). No API keys required.',
+    },
+    paths: {
+      '/v1/morning': {
+        get: {
+          summary: 'Daily Crypto Alpha Brief',
+          description: 'Market snapshot from CoinGecko synthesized by BlockRun AI. Cached 90 min — cache hits settle $0.',
+          responses: {
+            '200': { description: 'Returns { brief: string, cached: boolean, costUsd: number }' },
+            '402': { description: 'Payment required — attach x402 PAYMENT-SIGNATURE header' },
+          },
+        },
+      },
+      '/v1/research': {
+        get: {
+          summary: 'On-demand Messari AI Research',
+          description: 'Deep crypto research using Messari AI v2 with structured analytical templates.',
+          parameters: [
+            {
+              name: 'query',
+              in: 'query',
+              required: true,
+              schema: { type: 'string', maxLength: 200 },
+              description: 'Asset name or research topic (e.g. "solana", "ETH vs SOL")',
+            },
+            {
+              name: 'type',
+              in: 'query',
+              required: false,
+              schema: {
+                type: 'string',
+                default: 'diligence',
+                enum: ['diligence', 'bullbear', 'compare', 'narrative', 'risk', 'tweet'],
+              },
+              description: 'Report template type',
+            },
+          ],
+          responses: {
+            '200': { description: 'Returns { analysis: string, sources: array, type: string, query: string }' },
+            '400': { description: 'Missing or invalid query/type parameters' },
+            '402': { description: 'Payment required — attach x402 PAYMENT-SIGNATURE header' },
+          },
+        },
+      },
+    },
+  });
+});
+
 // ──────────────────────────────────────────────────────────────────────────────
 
 const PORT = parseInt(process.env.SERVER_PORT ?? '3000');
 app.listen(PORT, () => {
   const mode = HAS_CDP ? 'PRODUCTION (Base Mainnet)' : 'DEV (Base Sepolia testnet)';
   console.log(`x402 server running on port ${PORT} — ${mode}`);
-  console.log(`  GET /v1/morning   — $0.07 max (CoinGecko + BlockRun)`);
-  console.log(`  GET /v1/research  — $0.35 max (Messari AI synthesis)`);
+  console.log(`  GET /v1/morning    — $0.07 max`);
+  console.log(`  GET /v1/research   — $0.35 max`);
+  console.log(`  GET /openapi.json  — free`);
 });
