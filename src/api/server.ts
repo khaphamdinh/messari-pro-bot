@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit';
 import { paymentMiddleware, x402ResourceServer } from '@x402/express';
 import { ExactEvmScheme } from '@x402/evm/exact/server';
 import { HTTPFacilitatorClient } from '@x402/core/server';
+import { createFacilitatorConfig } from '@coinbase/x402';
 import { cacheGet, cacheSet, TTL, hourBucket } from '../cache';
 import { getMorningBrief } from './messari';
 import { runResearch, VALID_TYPES } from './services/research';
@@ -35,7 +36,11 @@ app.use(rateLimit({
 
 // ── x402 facilitator setup ─────────────────────────────────────────────────────
 
-const facilitator = new HTTPFacilitatorClient({ url: 'https://x402.org/facilitator' });
+const facilitatorConfig = createFacilitatorConfig(
+  process.env.CDP_API_KEY_ID,
+  process.env.CDP_API_KEY_SECRET,
+);
+const facilitator = new HTTPFacilitatorClient(facilitatorConfig);
 const server = new x402ResourceServer(facilitator)
   .register('eip155:8453', new ExactEvmScheme());
 
