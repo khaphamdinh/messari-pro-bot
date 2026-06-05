@@ -4,7 +4,6 @@ import rateLimit from 'express-rate-limit';
 import { paymentMiddleware, setSettlementOverrides, x402ResourceServer } from '@x402/express';
 import { UptoEvmScheme } from '@x402/evm/upto/server';
 import { HTTPFacilitatorClient } from '@x402/core/server';
-import { createFacilitatorConfig } from '@coinbase/x402';
 import { cacheGet, cacheSet, TTL, hourBucket } from '../cache';
 import { getMorningBrief } from './messari';
 import { runResearch, VALID_TYPES } from './services/research';
@@ -36,17 +35,9 @@ app.use(rateLimit({
 
 // ── x402 facilitator setup ─────────────────────────────────────────────────────
 
-const HAS_CDP = !!(process.env.CDP_API_KEY_ID && process.env.CDP_API_KEY_SECRET);
-
-const facilitatorConfig = HAS_CDP
-  ? createFacilitatorConfig(process.env.CDP_API_KEY_ID!, process.env.CDP_API_KEY_SECRET!)
-  : { url: 'https://x402.org/facilitator' };
-
-const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
-
-const facilitator = new HTTPFacilitatorClient(facilitatorConfig);
+const facilitator = new HTTPFacilitatorClient({ url: 'https://x402.org/facilitator' });
 const server = new x402ResourceServer(facilitator)
-  .register(NETWORK, new UptoEvmScheme());
+  .register('eip155:8453', new UptoEvmScheme());
 
 app.use(
   paymentMiddleware(
@@ -55,7 +46,7 @@ app.use(
         accepts: [{
           scheme: 'upto',
           price: '$0.07',
-          network: NETWORK,
+          network: 'eip155:8453',
           payTo: PROVIDER_WALLET,
         }],
         description: 'Daily crypto alpha brief: market overview, top movers, trending assets. Powered by CoinGecko + BlockRun AI. Cached 90min.',
@@ -65,7 +56,7 @@ app.use(
         accepts: [{
           scheme: 'upto',
           price: '$0.35',
-          network: NETWORK,
+          network: 'eip155:8453',
           payTo: PROVIDER_WALLET,
         }],
         description: 'On-demand crypto research synthesis powered by Messari AI. Pass query + type (diligence | bullbear | compare | narrative | risk | tweet). Example: /v1/research?query=solana&type=bullbear',
@@ -201,8 +192,7 @@ app.get('/openapi.json', (req, res) => {
 
 const PORT = parseInt(process.env.SERVER_PORT ?? '3000');
 app.listen(PORT, () => {
-  const mode = HAS_CDP ? 'PRODUCTION (Base Mainnet)' : 'DEV (Base Sepolia testnet)';
-  console.log(`x402 server running on port ${PORT} — ${mode}`);
+  console.log(`x402 server running on port ${PORT} — Base Mainnet`);
   console.log(`  GET /v1/morning    — $0.07 max`);
   console.log(`  GET /v1/research   — $0.35 max`);
   console.log(`  GET /openapi.json  — free`);

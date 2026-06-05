@@ -6,6 +6,7 @@
     "scripts": {
         "predev": "test -f src/prompts.ts || cp src/prompts.example.ts src/prompts.ts",
         "dev": "ts-node-dev --respawn --transpile-only src/bot/bot.ts",
+        "prebuild": "test -f src/prompts.ts || cp src/prompts.example.ts src/prompts.ts",
         "build": "tsc",
         "start": "node dist/bot/bot.js",
         "test": "echo \"Error: no test specified\" && exit 1",
