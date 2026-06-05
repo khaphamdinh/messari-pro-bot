@@ -1,6 +1,6 @@
 [build]
 builder = "nixpacks"
-buildCommand = "npm run build"
+buildCommand = "cp -n src/prompts.example.ts src/prompts.ts && npm run build"
 
 [deploy]
 startCommand = "npm run start:all"
