@@ -181,7 +181,7 @@ app.get('/openapi.json', (req, res) => {
 
 // ──────────────────────────────────────────────────────────────────────────────
 
-const PORT = parseInt(process.env.SERVER_PORT ?? '3000');
+const PORT = parseInt(process.env.PORT ?? process.env.SERVER_PORT ?? '3000');
 app.listen(PORT, () => {
   console.log(`x402 server running on port ${PORT} — Base Mainnet`);
   console.log(`  GET /v1/morning    — $0.07 max`);
