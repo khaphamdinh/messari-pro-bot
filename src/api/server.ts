@@ -36,13 +36,28 @@ app.use(rateLimit({
 
 // ── x402 facilitator setup ─────────────────────────────────────────────────────
 
-const facilitatorConfig = createFacilitatorConfig(
-  process.env.CDP_API_KEY_ID,
-  process.env.CDP_API_KEY_SECRET,
-);
-const facilitator = new HTTPFacilitatorClient(facilitatorConfig);
-const server = new x402ResourceServer(facilitator)
-  .register('eip155:8453', new ExactEvmScheme());
+let facilitator: HTTPFacilitatorClient;
+let server: x402ResourceServer;
+
+try {
+  const facilitatorConfig = createFacilitatorConfig(
+    process.env.CDP_API_KEY_ID,
+    process.env.CDP_API_KEY_SECRET,
+  );
+  facilitator = new HTTPFacilitatorClient(facilitatorConfig);
+  server = new x402ResourceServer(facilitator)
+    .register('eip155:8453', new ExactEvmScheme());
+  console.log('✅ CDP facilitator initialized successfully');
+} catch (err: any) {
+  console.error('❌ Failed to initialize CDP facilitator:', err.message);
+  console.error('   Falling back to x402.org public facilitator...');
+  
+  // Fallback to public facilitator
+  facilitator = new HTTPFacilitatorClient({ url: 'https://x402.org/facilitator' });
+  server = new x402ResourceServer(facilitator)
+    .register('eip155:8453', new ExactEvmScheme());
+  console.log('✅ Using x402.org public facilitator as fallback');
+}
 
 app.use(
   paymentMiddleware(
@@ -193,3 +208,4 @@ app.listen(PORT, () => {
   console.log(`  GET /v1/research   — $0.35 max`);
   console.log(`  GET /openapi.json  — free`);
 });
+
