@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-const requiredEnvVars = ['TELEGRAM_BOT_TOKEN', 'WALLET_PRIVATE_KEY'];
+const requiredEnvVars = ['WALLET_PRIVATE_KEY'];
 
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
