@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import { paymentMiddleware, setSettlementOverrides, x402ResourceServer } from '@x402/express';
-import { UptoEvmScheme } from '@x402/evm/upto/server';
+import { paymentMiddleware, x402ResourceServer } from '@x402/express';
+import { ExactEvmScheme } from '@x402/evm/exact/server';
 import { HTTPFacilitatorClient } from '@x402/core/server';
 import { cacheGet, cacheSet, TTL, hourBucket } from '../cache';
 import { getMorningBrief } from './messari';
@@ -37,14 +37,14 @@ app.use(rateLimit({
 
 const facilitator = new HTTPFacilitatorClient({ url: 'https://x402.org/facilitator' });
 const server = new x402ResourceServer(facilitator)
-  .register('eip155:8453', new UptoEvmScheme());
+  .register('eip155:8453', new ExactEvmScheme());
 
 app.use(
   paymentMiddleware(
     {
       'GET /v1/morning': {
         accepts: [{
-          scheme: 'upto',
+          scheme: 'exact',
           price: '$0.07',
           network: 'eip155:8453',
           payTo: PROVIDER_WALLET,
@@ -54,7 +54,7 @@ app.use(
       },
       'GET /v1/research': {
         accepts: [{
-          scheme: 'upto',
+          scheme: 'exact',
           price: '$0.35',
           network: 'eip155:8453',
           payTo: PROVIDER_WALLET,
@@ -75,17 +75,12 @@ app.get('/v1/morning', async (req, res) => {
     const cached = cacheGet<string>(key);
 
     if (cached) {
-      setSettlementOverrides(res, { amount: '0' });
       return res.json({ brief: cached, cached: true });
     }
 
-    const { text: brief, costUsd } = await getMorningBrief();
-
-    const settleAtomic = Math.round((costUsd + 0.015) * 1_000_000);
-    setSettlementOverrides(res, { amount: String(settleAtomic) });
-
+    const { text: brief } = await getMorningBrief();
     cacheSet(key, brief, TTL.MORNING);
-    res.json({ brief, cached: false, costUsd });
+    res.json({ brief, cached: false });
 
   } catch (err: any) {
     console.error('[/v1/morning]', err.message);
@@ -115,10 +110,6 @@ app.get('/v1/research', async (req, res) => {
 
   try {
     const result = await runResearch(query, type);
-
-    // Messari AI $0.25 + gas $0.015 = $0.265 = 265,000 USDC atomic units
-    setSettlementOverrides(res, { amount: '265000' });
-
     res.json({
       analysis: result.text,
       sources: result.sources,
