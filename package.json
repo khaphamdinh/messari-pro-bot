@@ -31,7 +31,8 @@
         "express": "^5.2.1",
         "express-rate-limit": "^8.5.2",
         "grammy": "^1.30.0",
-        "viem": "^2.21.0"
+        "viem": "^2.21.0",
+        "x402-research-endpoint": "github:khaphamdinh/x402-research-endpoint#main"
     },
     "devDependencies": {
         "@types/node": "^22.5.0",
@@ -40,3 +41,4 @@
         "typescript": "^5.5.4"
     }
 }
+
