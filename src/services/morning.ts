@@ -1,5 +1,5 @@
-import { fetchMarketSnapshot } from './data/coingecko';
-import { synthesizeMorningBrief } from './data/blockrun';
+import { fetchMarketSnapshot } from '../providers/coingecko';
+import { synthesizeMorningBrief } from '../providers/blockrun';
 
 export interface MorningBriefResult {
   text: string;

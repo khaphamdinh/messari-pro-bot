@@ -1,4 +1,4 @@
-import { fetchWithPayment } from '../../core/x402Client';
+import { fetchWithPayment } from '../core/x402Client';
 import { MarketSnapshot } from './coingecko';
 
 const BLOCKRUN_URL = 'https://blockrun.ai/api/v1/chat/completions';

@@ -1,5 +1,5 @@
 import { Context } from 'grammy';
-import { getMorningBrief } from '../../api/messari';
+import { getMorningBrief } from '../../services/morning';
 import { formatResponse, sendChunkedResponse } from '../../format';
 import { cacheGet, cacheSet, TTL, hourBucket } from '../../cache';
 

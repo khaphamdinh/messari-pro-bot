@@ -6,8 +6,8 @@ import { UptoEvmScheme } from '@x402/evm/upto/server';
 import { HTTPFacilitatorClient } from '@x402/core/server';
 import { createFacilitatorConfig } from '@coinbase/x402';
 import { cacheGet, cacheSet, TTL, hourBucket } from '../cache';
-import { getMorningBrief } from './messari';
-import { runResearch, VALID_TYPES } from './services/research';
+import { getMorningBrief } from '../services/morning';
+import { runResearch, VALID_TYPES } from '../services/research';
 import { walletAddress } from '../core/x402Client';
 
 const app = express();
@@ -27,7 +27,7 @@ if (PROVIDER_WALLET.toLowerCase() === walletAddress.toLowerCase()) {
 // ── Rate limiting — before payment middleware ──────────────────────────────────
 
 app.use(rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
@@ -40,7 +40,7 @@ const HAS_CDP = !!(process.env.CDP_API_KEY_ID && process.env.CDP_API_KEY_SECRET)
 
 const facilitatorConfig = HAS_CDP
   ? createFacilitatorConfig(process.env.CDP_API_KEY_ID!, process.env.CDP_API_KEY_SECRET!)
-  : { url: 'https://x402.org/facilitator' };
+  : { url: 'https://facilitator.x402.org' };
 
 const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
 

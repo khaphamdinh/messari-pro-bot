@@ -10,7 +10,6 @@ dist/
 !src/samples/README.md
 
 # Secret Intellectual Property
-src/prompts.ts
 src/samples/*.pdf
 src/samples/*.md
 src/samples/venv/

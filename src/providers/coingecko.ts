@@ -6,7 +6,7 @@ export interface MarketSnapshot {
   btcDominance: string;
   totalMarketCapUsd: string;
   topAssets: string;
-  topMovers: string;  // best + worst 24h performers from top 20
+  topMovers: string;
 }
 
 function fmt(n: number): string {
@@ -46,7 +46,6 @@ export async function fetchMarketSnapshot(): Promise<MarketSnapshot> {
     })
     .join('\n');
 
-  // Derive movers from top 20 — sort by absolute 24h change
   const sorted = [...top20]
     .filter(c => c.price_change_percentage_24h != null)
     .sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h);

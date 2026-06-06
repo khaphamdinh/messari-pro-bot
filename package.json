@@ -5,12 +5,13 @@
     "main": "index.js",
     "scripts": {
         "predev": "test -f src/prompts.ts || cp src/prompts.example.ts src/prompts.ts",
+        "prebuild": "test -f src/prompts.ts || cp src/prompts.example.ts src/prompts.ts",
         "dev": "ts-node-dev --respawn --transpile-only src/bot/bot.ts",
         "build": "tsc",
         "start": "node dist/bot/bot.js",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start:server": "node dist/api/server.js",
-        "start:all": "concurrently \"node dist/bot/bot.js\" \"node dist/api/server.js\""
+        "start:server": "node dist/server/server.js",
+        "start:all": "concurrently \"node dist/bot/bot.js\" \"node dist/server/server.js\""
     },
     "keywords": [],
     "author": "",
@@ -21,7 +22,7 @@
         "@x402/core": "^2.14.0",
         "@x402/evm": "^2.14.0",
         "@x402/express": "^2.14.0",
-        "@x402/fetch": "^2.3.0",
+        "@x402/fetch": "^2.14.0",
         "concurrently": "^9.2.1",
         "dotenv": "^16.4.5",
         "express": "^5.2.1",
