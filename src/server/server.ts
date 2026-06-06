@@ -39,7 +39,7 @@ app.use(rateLimit({
   message: { error: 'Too many requests from this IP, please try again after 15 minutes.' },
 }));
 
-// ── x402 constants ─────────────────────────────────────────────────────────────
+// ── x402 constants ──────────────────────────────────────────────────────────────
 
 const HAS_CDP = !!(process.env.CDP_API_KEY_ID && process.env.CDP_API_KEY_SECRET);
 const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
@@ -90,6 +90,38 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
       server,
     )
   );
+
+  // ── GET / ────────────────────────────────────────────────────────────────────
+
+  app.get('/', (req, res) => {
+    res.json({
+      name: 'Messari Pro x402 API',
+      version: '2.0.0',
+      description: 'Crypto intelligence API paid via x402 protocol (USDC on Base). No API keys required.',
+      endpoints: {
+        '/v1/morning': {
+          method: 'GET',
+          price: '$0.07',
+          description: 'Daily crypto alpha brief: market overview, top movers, trending assets. Cached 90min.',
+        },
+        '/v1/research': {
+          method: 'GET',
+          price: '$0.35',
+          description: 'On-demand crypto research synthesis powered by Messari AI.',
+          params: {
+            query: 'required - asset name or research topic (max 200 chars)',
+            type: 'optional - diligence | bullbear | compare | narrative | risk | tweet (default: diligence)',
+          },
+        },
+        '/openapi.json': {
+          method: 'GET',
+          price: 'free',
+          description: 'OpenAPI 3.0 specification',
+        },
+      },
+      docs: 'See /openapi.json for full API specification',
+    });
+  });
 
   // ── GET /v1/morning ──────────────────────────────────────────────────────────
 
@@ -227,3 +259,4 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
   console.error('Fatal: server failed to start:', err);
   process.exit(1);
 });
+
