@@ -78,13 +78,11 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
           mimeType: 'application/json',
           serviceName: 'Messari Pro API',
           tags: ['crypto', 'research', 'ai', 'messari', 'defi'],
-          extensions: {
-            bazaar: declareDiscoveryExtension({
-              output: {
-                example: { brief: 'BTC up 3% on ETF inflows...', cached: false, costUsd: 0.055 },
-              },
-            }),
-          },
+          extensions: declareDiscoveryExtension({
+            output: {
+              example: { brief: 'BTC up 3% on ETF inflows...', cached: false, costUsd: 0.055 },
+            },
+          }),
         },
         'GET /v1/research': {
           accepts: [{
@@ -97,21 +95,19 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
           mimeType: 'application/json',
           serviceName: 'Messari Pro API',
           tags: ['crypto', 'research', 'ai', 'messari', 'defi'],
-          extensions: {
-            bazaar: declareDiscoveryExtension({
-              input: { query: 'solana', type: 'bullbear' },
-              inputSchema: {
-                properties: {
-                  query: { type: 'string', description: 'Asset name or research topic (max 200 chars)' },
-                  type: { type: 'string', enum: ['diligence', 'bullbear', 'compare', 'narrative', 'risk', 'tweet'], default: 'diligence' },
-                },
-                required: ['query'],
+          extensions: declareDiscoveryExtension({
+            input: { query: 'solana', type: 'bullbear' },
+            inputSchema: {
+              properties: {
+                query: { type: 'string', description: 'Asset name or research topic (max 200 chars)' },
+                type: { type: 'string', enum: ['diligence', 'bullbear', 'compare', 'narrative', 'risk', 'tweet'], default: 'diligence' },
               },
-              output: {
-                example: { analysis: 'Solana bulls point to...', sources: [], type: 'bullbear', query: 'solana' },
-              },
-            }),
-          },
+              required: ['query'],
+            },
+            output: {
+              example: { analysis: 'Solana bulls point to...', sources: [], type: 'bullbear', query: 'solana' },
+            },
+          }),
         },
       },
       server,
