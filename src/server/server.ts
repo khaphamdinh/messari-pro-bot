@@ -7,7 +7,7 @@ if (typeof (globalThis as any).crypto === 'undefined') {
 import 'dotenv/config';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import { paymentMiddleware, setSettlementOverrides, x402ResourceServer } from '@x402/express';
+import { paymentMiddleware, x402ResourceServer } from '@x402/express';
 import { UptoEvmScheme } from '@x402/evm/upto/server';
 import { ExactEvmScheme } from '@x402/evm/exact/server';
 import { HTTPFacilitatorClient } from '@x402/core/server';
@@ -153,14 +153,10 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
       const cached = cacheGet<string>(key);
 
       if (cached) {
-        setSettlementOverrides(res, { amount: '0' });
         return res.json({ brief: cached, cached: true });
       }
 
       const { text: brief, costUsd } = await getMorningBrief();
-
-      const settleAtomic = Math.round((costUsd + 0.015) * 1_000_000);
-      setSettlementOverrides(res, { amount: String(settleAtomic) });
 
       cacheSet(key, brief, TTL.MORNING);
       res.json({ brief, cached: false, costUsd });
@@ -193,9 +189,6 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
 
     try {
       const result = await runResearch(query, type);
-
-      // Messari AI $0.25 + gas $0.015 = $0.265 = 265,000 USDC atomic units
-      setSettlementOverrides(res, { amount: '265000' });
 
       res.json({
         analysis: result.text,
