@@ -10,6 +10,7 @@ import rateLimit from 'express-rate-limit';
 import { paymentMiddleware, setSettlementOverrides, x402ResourceServer } from '@x402/express';
 import { UptoEvmScheme } from '@x402/evm/upto/server';
 import { HTTPFacilitatorClient } from '@x402/core/server';
+import { declareDiscoveryExtension } from '@x402/extensions/bazaar';
 import { cacheGet, cacheSet, TTL, hourBucket } from '../cache';
 import { getMorningBrief } from '../services/morning';
 import { runResearch, VALID_TYPES } from '../services/research';
@@ -75,6 +76,15 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
           }],
           description: 'Daily crypto alpha brief: market overview, top movers, trending assets. Powered by CoinGecko + BlockRun AI. Cached 90min.',
           mimeType: 'application/json',
+          serviceName: 'Messari Pro API',
+          tags: ['crypto', 'research', 'ai', 'messari', 'defi'],
+          extensions: {
+            bazaar: declareDiscoveryExtension({
+              output: {
+                example: { brief: 'BTC up 3% on ETF inflows...', cached: false, costUsd: 0.055 },
+              },
+            }),
+          },
         },
         'GET /v1/research': {
           accepts: [{
@@ -85,6 +95,23 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
           }],
           description: 'On-demand crypto research synthesis powered by Messari AI. Pass query + type (diligence | bullbear | compare | narrative | risk | tweet). Example: /v1/research?query=solana&type=bullbear',
           mimeType: 'application/json',
+          serviceName: 'Messari Pro API',
+          tags: ['crypto', 'research', 'ai', 'messari', 'defi'],
+          extensions: {
+            bazaar: declareDiscoveryExtension({
+              input: { query: 'solana', type: 'bullbear' },
+              inputSchema: {
+                properties: {
+                  query: { type: 'string', description: 'Asset name or research topic (max 200 chars)' },
+                  type: { type: 'string', enum: ['diligence', 'bullbear', 'compare', 'narrative', 'risk', 'tweet'], default: 'diligence' },
+                },
+                required: ['query'],
+              },
+              output: {
+                example: { analysis: 'Solana bulls point to...', sources: [], type: 'bullbear', query: 'solana' },
+              },
+            }),
+          },
         },
       },
       server,
