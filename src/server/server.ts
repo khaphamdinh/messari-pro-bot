@@ -9,6 +9,7 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 import { paymentMiddleware, setSettlementOverrides, x402ResourceServer } from '@x402/express';
 import { UptoEvmScheme } from '@x402/evm/upto/server';
+import { ExactEvmScheme } from '@x402/evm/exact/server';
 import { HTTPFacilitatorClient } from '@x402/core/server';
 import { declareDiscoveryExtension } from '@x402/extensions/bazaar';
 import { cacheGet, cacheSet, TTL, hourBucket } from '../cache';
@@ -60,7 +61,8 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
 
   const facilitator = new HTTPFacilitatorClient(facilitatorConfig);
   const server = new x402ResourceServer(facilitator)
-    .register(NETWORK, new UptoEvmScheme());
+    .register(NETWORK, new UptoEvmScheme())
+    .register(NETWORK, new ExactEvmScheme());
 
   // ── Payment middleware ───────────────────────────────────────────────────────
 
@@ -68,12 +70,10 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
     paymentMiddleware(
       {
         'GET /v1/morning': {
-          accepts: [{
-            scheme: 'upto',
-            price: '$0.07',
-            network: NETWORK,
-            payTo: PROVIDER_WALLET,
-          }],
+          accepts: [
+            { scheme: 'upto',  price: '$0.07', network: NETWORK, payTo: PROVIDER_WALLET },
+            { scheme: 'exact', price: '$0.07', network: NETWORK, payTo: PROVIDER_WALLET },
+          ],
           description: 'Daily crypto alpha brief: market overview, top movers, trending assets. Powered by CoinGecko + BlockRun AI. Cached 90min.',
           mimeType: 'application/json',
           serviceName: 'Messari Pro API',
@@ -85,12 +85,10 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
           }),
         },
         'GET /v1/research': {
-          accepts: [{
-            scheme: 'upto',
-            price: '$0.35',
-            network: NETWORK,
-            payTo: PROVIDER_WALLET,
-          }],
+          accepts: [
+            { scheme: 'upto',  price: '$0.35', network: NETWORK, payTo: PROVIDER_WALLET },
+            { scheme: 'exact', price: '$0.35', network: NETWORK, payTo: PROVIDER_WALLET },
+          ],
           description: 'On-demand crypto research synthesis powered by Messari AI. Pass query + type (diligence | bullbear | compare | narrative | risk | tweet). Example: /v1/research?query=solana&type=bullbear',
           mimeType: 'application/json',
           serviceName: 'Messari Pro API',
