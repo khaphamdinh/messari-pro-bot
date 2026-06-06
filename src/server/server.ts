@@ -18,6 +18,7 @@ import { runResearch, VALID_TYPES } from '../services/research';
 import { walletAddress } from '../core/x402Client';
 
 const app = express();
+app.set('trust proxy', true);
 
 // ── Security checks ────────────────────────────────────────────────────────────
 
