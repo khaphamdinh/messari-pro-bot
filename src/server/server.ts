@@ -71,8 +71,8 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
       {
         'GET /v1/morning': {
           accepts: [
-            { scheme: 'upto',  price: '$0.07', network: NETWORK, payTo: PROVIDER_WALLET },
-            { scheme: 'exact', price: '$0.07', network: NETWORK, payTo: PROVIDER_WALLET },
+            { scheme: 'upto',  price: '$0.07',  network: NETWORK, payTo: PROVIDER_WALLET },
+            { scheme: 'exact', price: '$0.25',  network: NETWORK, payTo: PROVIDER_WALLET },
           ],
           description: 'Daily crypto alpha brief: market overview, top movers, trending assets. Powered by CoinGecko + BlockRun AI. Cached 90min.',
           mimeType: 'application/json',
