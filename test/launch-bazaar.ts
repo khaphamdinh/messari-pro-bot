@@ -27,14 +27,27 @@ async function main() {
     }],
   });
 
-  console.log('\nCalling /v1/morning with real payment...');
-  const res = await fetchWithPayment(`${SERVER}/v1/morning`);
-  const data = await res.json();
+  // Try /v1/morning first, fallback to /v1/research if BlockRun is down
+  let res = await fetchWithPayment(`${SERVER}/v1/morning`);
+  let endpoint = '/v1/morning';
 
+  if (res.status === 500) {
+    console.log('Morning failed (upstream error), trying /v1/research...');
+    res = await fetchWithPayment(`${SERVER}/v1/research?query=bitcoin&type=bullbear`);
+    endpoint = '/v1/research';
+  }
+
+  const data = await res.json();
+  console.log(`\nEndpoint: ${endpoint}`);
   console.log(`Status: ${res.status}`);
-  console.log(`Cached: ${data.cached}`);
-  console.log(`Brief (200 chars): ${String(data.brief ?? data.error).slice(0, 200)}`);
-  console.log('\nDone — endpoint should now be indexed in Bazaar.');
+  if (res.status === 200) {
+    const content = data.brief ?? data.analysis ?? JSON.stringify(data).slice(0, 200);
+    console.log(`Response (200 chars): ${String(content).slice(0, 200)}`);
+    console.log('\n✓ Payment settled — endpoint should be indexed in Bazaar shortly.');
+  } else {
+    console.log('Response:', JSON.stringify(data).slice(0, 300));
+    console.log('\n✗ Payment did not go through.');
+  }
 }
 
 main().catch(console.error);

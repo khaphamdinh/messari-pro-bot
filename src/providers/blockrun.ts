@@ -70,7 +70,7 @@ export async function synthesizeMorningBrief(snapshot: MarketSnapshot): Promise<
       return { text, costUsd: model.costUsd, model: model.id };
     } catch (err: any) {
       lastError = err;
-      if (!err.message.includes('503') && !err.message.includes('429') && !err.message.includes('FREE_MODEL_FAILED')) {
+      if (!err.message.includes('503') && !err.message.includes('429') && !err.message.includes('524') && !err.message.includes('FREE_MODEL_FAILED')) {
         throw err;
       }
       console.warn(`[BlockRun] ${model.id} unavailable, trying next...`);
