@@ -1,3 +1,9 @@
+// Polyfill globalThis.crypto for Node.js < 19 (Railway runs Node 18)
+import { webcrypto } from 'node:crypto';
+if (typeof (globalThis as any).crypto === 'undefined') {
+  (globalThis as any).crypto = webcrypto;
+}
+
 import 'dotenv/config';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
