@@ -1,8 +1,9 @@
 /**
- * Run once to trigger CDP Bazaar indexing.
+ * Run once to trigger CDP Bazaar indexing for a new deployment.
  * Makes a real paid request to the live server using the bot's spending wallet.
  *
- * Run: npx ts-node test/launch-bazaar.ts
+ * Run: npx ts-node scripts/launch-bazaar.ts
+ * Env: SERVER_URL (defaults to Railway prod URL if not set)
  */
 
 import 'dotenv/config';
@@ -10,7 +11,7 @@ import { wrapFetchWithPaymentFromConfig } from '@x402/fetch';
 import { ExactEvmScheme } from '@x402/evm';
 import { privateKeyToAccount } from 'viem/accounts';
 
-const SERVER = 'https://x402-research.up.railway.app';
+const SERVER = process.env.SERVER_URL ?? 'https://x402-research.up.railway.app';
 
 async function main() {
   const rawPk = process.env.WALLET_PRIVATE_KEY;
@@ -19,6 +20,7 @@ async function main() {
 
   const account = privateKeyToAccount(pk);
   console.log(`Buyer wallet: ${account.address}`);
+  console.log(`Target server: ${SERVER}`);
 
   const fetchWithPayment = wrapFetchWithPaymentFromConfig(fetch, {
     schemes: [{
