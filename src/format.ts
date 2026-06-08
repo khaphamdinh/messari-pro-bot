@@ -199,15 +199,22 @@ function formatNum(n: number): string {
   return n.toFixed(2);
 }
 
+// Strip null bytes and lone surrogates that cause Telegram 400 UTF-8 errors
+function sanitizeForTelegram(text: string): string {
+  return text.replace(/\x00/g, '').replace(/[\uD800-\uDFFF]/g, '');
+}
+
 // Utility: Send long text as chunked Telegram messages with Markdown fallback
 export async function sendChunkedResponse(
   ctx: Context,
   pendingMessageId: number,
   text: string,
 ): Promise<void> {
+  const sanitized = sanitizeForTelegram(text);
+
   // Convert standard Markdown to Telegram Legacy Markdown
   // 1. Convert **bold** to *bold* (Telegram's syntax for bold)
-  let telegramReadyText = text.replace(/\*\*(.*?)\*\*/g, '*$1*');
+  let telegramReadyText = sanitized.replace(/\*\*(.*?)\*\*/g, '*$1*');
   
   // 2. Format headers properly (in case AI uses # instead of custom format)
   telegramReadyText = telegramReadyText.replace(/^#+\s(.*?)$/gm, '🔥 *$1*');
