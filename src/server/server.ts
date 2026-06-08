@@ -12,8 +12,6 @@ import { UptoEvmScheme } from '@x402/evm/upto/server';
 import { ExactEvmScheme } from '@x402/evm/exact/server';
 import { HTTPFacilitatorClient } from '@x402/core/server';
 import { declareDiscoveryExtension } from '@x402/extensions/bazaar';
-import { cacheGet, cacheSet, TTL, hourBucket } from '../cache';
-import { getMorningBrief } from '../services/morning';
 import { runResearch, VALID_TYPES } from '../services/research';
 import { walletAddress } from '../core/x402Client';
 
@@ -70,21 +68,6 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
   app.use(
     paymentMiddleware(
       {
-        'GET /v1/morning': {
-          accepts: [
-            { scheme: 'upto',  price: '$0.07',  network: NETWORK, payTo: PROVIDER_WALLET },
-            { scheme: 'exact', price: '$0.25',  network: NETWORK, payTo: PROVIDER_WALLET },
-          ],
-          description: 'Daily crypto alpha brief: market overview, top movers, trending assets. Powered by CoinGecko + BlockRun AI. Cached 90min.',
-          mimeType: 'application/json',
-          serviceName: 'Messari Pro API',
-          tags: ['crypto', 'research', 'ai', 'messari', 'defi'],
-          extensions: declareDiscoveryExtension({
-            output: {
-              example: { brief: 'BTC up 3% on ETF inflows...', cached: false, costUsd: 0.055 },
-            },
-          }),
-        },
         'GET /v1/research': {
           accepts: [
             { scheme: 'upto',  price: '$0.35', network: NETWORK, payTo: PROVIDER_WALLET },
@@ -121,11 +104,6 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
       version: '2.0.0',
       description: 'Crypto intelligence API paid via x402 protocol (USDC on Base). No API keys required.',
       endpoints: {
-        '/v1/morning': {
-          method: 'GET',
-          price: '$0.07',
-          description: 'Daily crypto alpha brief: market overview, top movers, trending assets. Cached 90min.',
-        },
         '/v1/research': {
           method: 'GET',
           price: '$0.35',
@@ -143,28 +121,6 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
       },
       docs: 'See /openapi.json for full API specification',
     });
-  });
-
-  // ── GET /v1/morning ──────────────────────────────────────────────────────────
-
-  app.get('/v1/morning', async (req, res) => {
-    try {
-      const key = `morning:${hourBucket()}`;
-      const cached = cacheGet<string>(key);
-
-      if (cached) {
-        return res.json({ brief: cached, cached: true });
-      }
-
-      const { text: brief, costUsd } = await getMorningBrief();
-
-      cacheSet(key, brief, TTL.MORNING);
-      res.json({ brief, cached: false, costUsd });
-
-    } catch (err: any) {
-      console.error('[/v1/morning]', err.message);
-      res.status(500).json({ error: err.message });
-    }
   });
 
   // ── GET /v1/research ─────────────────────────────────────────────────────────
@@ -265,8 +221,7 @@ const NETWORK = HAS_CDP ? 'eip155:8453' : 'eip155:84532';
   app.listen(PORT, () => {
     const mode = HAS_CDP ? 'PRODUCTION (Base Mainnet)' : 'DEV (Base Sepolia testnet)';
     console.log(`x402 server running on port ${PORT} — ${mode}`);
-    console.log(`  GET /v1/morning    — $0.07 max`);
-    console.log(`  GET /v1/research   — $0.35 max`);
+    console.log(`  GET /v1/research   — $0.35`);
     console.log(`  GET /openapi.json  — free`);
   });
 
