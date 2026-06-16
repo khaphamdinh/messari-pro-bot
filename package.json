@@ -10,8 +10,7 @@
         "build": "tsc",
         "start": "node dist/server/server.js",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start:server": "node dist/server/server.js",
-        "start:all": "concurrently \"node dist/bot/bot.js\" \"node dist/server/server.js\""
+        "start:server": "node dist/server/server.js"
     },
     "keywords": [],
     "author": "",
